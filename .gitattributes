@@ -1,5 +1,8 @@
 # 统一换行符策略：Windows 脚本保持 CRLF，其余文本用 LF，二进制不做转换
 * text=auto eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.py text eol=lf
 *.bat text eol=crlf
 *.cmd text eol=crlf
 *.vbs text eol=crlf
