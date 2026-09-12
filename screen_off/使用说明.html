@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>一键关闭屏幕 · 使用说明</title>
+<script>
+  // 渲染前套用主题，避免闪白
+  (function () {
+    try {
+      var t = localStorage.getItem('wb-theme');
+      if (!t) t = 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
+<style>
+  :root {
+    --bg: #F8FAFC;
+    --surface: #FFFFFF;
+    --surface-2: #F1F5F9;
+    --text: #0F172A;
+    --muted: #475569;
+    --faint: #64748B;
+    --border: #E2E8F0;
+    --border-strong: #CBD5E1;
+    --accent: #0284C7;
+    --accent-soft: #E0F2FE;
+    --warn-bg: #FEF3C7;
+    --warn-text: #92400E;
+    --ok-bg: #DCFCE7;
+    --ok-text: #166534;
+    --code-bg: #F1F5F9;
+    --code-text: #0F172A;
+  }
+  [data-theme="dark"] {
+    --bg: #0B1220;
+    --surface: #0F172A;
+    --surface-2: #16203A;
+    --text: #E2E8F0;
+    --muted: #94A3B8;
+    --faint: #64748B;
+    --border: #1E293B;
+    --border-strong: #334155;
+    --accent: #38BDF8;
+    --accent-soft: #0C2233;
+    --warn-bg: #3B2A0B;
+    --warn-text: #FCD34D;
+    --ok-bg: #052E1B;
+    --ok-text: #6EE7B7;
+    --code-bg: #020617;
+    --code-text: #E2E8F0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 20px 80px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    line-height: 1.75;
+    font-size: 16px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 28px; margin: 0 0 8px; letter-spacing: .5px; }
+  .sub { color: var(--muted); margin: 0 0 0; font-size: 15px; }
+  .hd { display: flex; align-items: center; gap: 18px; margin-bottom: 32px; }
+  .appicon { width: 76px; height: 76px; flex: 0 0 auto; border-radius: 18px; }
+  h2 {
+    font-size: 20px; margin: 40px 0 14px; padding-left: 12px;
+    border-left: 4px solid var(--accent);
+  }
+  h3 { font-size: 16px; margin: 24px 0 10px; color: var(--text); }
+  p, li { color: var(--muted); }
+  strong { color: var(--text); }
+  a { color: var(--accent); }
+  code {
+    background: var(--code-bg); color: var(--code-text);
+    padding: 2px 6px; border-radius: 4px; font-size: 14px;
+    border: 1px solid var(--border);
+    font-family: Consolas, "Courier New", monospace;
+  }
+  pre {
+    background: var(--code-bg); color: var(--code-text);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; overflow-x: auto; font-size: 14px; line-height: 1.6;
+    font-family: Consolas, "Courier New", monospace;
+  }
+  pre code { background: none; border: none; padding: 0; font-size: 14px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 22px; margin: 16px 0;
+  }
+  .note {
+    background: var(--accent-soft); border: 1px solid var(--border-strong);
+    border-radius: 10px; padding: 14px 18px; margin: 16px 0;
+  }
+  .warn {
+    background: var(--warn-bg); color: var(--warn-text);
+    border-radius: 10px; padding: 14px 18px; margin: 16px 0;
+  }
+  .warn strong { color: var(--warn-text); }
+  .ok {
+    background: var(--ok-bg); color: var(--ok-text);
+    border-radius: 10px; padding: 14px 18px; margin: 16px 0;
+  }
+  .ok strong { color: var(--ok-text); }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 15px; }
+  th, td {
+    border: 1px solid var(--border); padding: 10px 12px; text-align: left;
+    vertical-align: top;
+  }
+  th { background: var(--surface-2); color: var(--text); font-weight: 600; }
+  td { color: var(--muted); }
+  td strong { color: var(--text); }
+  .toolbar {
+    position: fixed; top: 16px; right: 16px; z-index: 99;
+  }
+  .toolbar button {
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border-strong); border-radius: 8px;
+    padding: 8px 14px; cursor: pointer; font-size: 14px;
+    font-family: inherit;
+  }
+  .toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+  ul { padding-left: 22px; }
+  li { margin: 6px 0; }
+  .kv { font-size: 15px; }
+  .kv b { color: var(--text); display: inline-block; min-width: 120px; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
+  .toc { columns: 2; column-gap: 28px; }
+  .toc a { text-decoration: none; display: block; padding: 4px 0; }
+  .toc a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="toolbar"><button id="themeBtn" onclick="toggleTheme()">切到浅色</button></div>
+<div class="wrap">
+
+  <div class="hd"><img class="appicon" alt="图标" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAsAklEQVR4nO2dCZRc11nnv3vvW2qvVmuXbC1eJC+y5ViKjWyHKGRCFhjgzEQKOSZhgCRMWMIhJ8NhZpJgQuacOZCTGZIBgxPIMEnmJJLDEoaACcSC2BJ2bMt2FFuSZVmWtS/dXXu99c7536ontdqSaLWqu191fT+flqyuqtdVt7///3333u/eKyilaK3ljh0kT5/errdu3RqNf+ypo0dzVkteZytnRatR30RK5OIovkcIaZHWRank2jiOZ+/NM3MOKSXFUbyPhKhpHYdSyZ0U6WY2X9gVRP7hMBsf3Lh8eXP8a7Zt26YWLtwiNm+mWAiRyoAUlCK01mLHjh1q8+bNFzTYnj2Hh9tKrCet36RJbyIt1kopljmO41qWRSQEhUGIKxCE73le96Pp2f1AzBxBmFhyXdcYAf5t2RYClsIwJN/3vTjWx0jofYLELhLiu5lIP7du3YqRC29oO+TmzZsjIURqAtOiFJA0jhACKsYXPbX36E2Oa22K/OinfB3fl3XdYcfNUBSGRuC+71O93tAkKIbOhRDGzIQgYdtWqoyNmRu0222tdeeuovF/HV+QlmW5juOsdl13tbKsd/heGzE6snvfsceUo/7S98JdQoi9RGRuao8++qg18SY3W8yqUJAibdmyBeI1Kf6u519enM8V3hXH8U/GUfSOQrHoRnFErWYLgo816VgQCaWUsC0lMo4lchmHLEtSPuOaT6OkpIyTCl9j5hhtP6QIXUtN1Gh7FIYxNds+vq+DMNJRFGlNpAUJ6TiOzOaypKSieq3mSaX+Tkr5V41m/Vubbr/+JK6ntVbbt2+niV3cOW8AuOPjryQVevbA8XWCxM9GYfi+QrG4OAojqjfqSOtNwyglZT7rikLOpWLOpYxrk2tbJCXf6JnZJ441eUFIbS+gWtOjetOjRsvTkXELQndBFfIFUpYxg5PKsr6sSf/ZHTcs3ZN0fU3yOgsZwYwqqPtBkeobYT+//8TbNOn3RXH0nmKp5NRrNaROxkYd25LFfEYMFbME4Wdd+xLXNH+e/yhihj8UMzDoc38k/yPQ5bwoLS8wRjBWa1Gt0dZ+EMZ4ruu6qlAsUq1a9ZVUXxckvnz7miXfNlfUWsFPZnKMYMa0gg+XCP/JFw6vs5X6Xdtx3mlbNlWrFQqjKBQkVD7nigXlPA2XczCBCdfovmlWOJNC9CXi0w9CGqk06UylQY2mh2GEyFLKKpXKFIQBBb7/t0EU/cZdt6zYM1Er042YiXT/ASL6bSHinbv3Lc/lCr+jhbg/42acWq0ah1GsbUvJ4XJezC/nqZTPnGvAxHFZ8EzfGoI4LzL8u9po09lKg0YqDYwbxJaSolgsybbX9oXWX20265+45w1rj/5WVzfT3S2YVgMY72RP7zv6q7Zlfdx1M4tq1QoFYQgXVBD9kgWlC1J8NBSLnplL6AkxjS7CiTNVYwZhFEW2ZaliqUye1z4VhOGnN6xd/vmZyAbEdPX1t28nuXWriJ549uU1Ti73uVwu9/Zmo06e74ekSS2YVxDLFpbPCX+iWzLMXER3/0jMAEZw7HSFzozWMa0YuY5j5fIFajabj/jN5kfuvuP6/du2abVly/SMDYjpmNpLpjWe2Xv0A7Zjf8ZSVrlWq4ZhFKlyISeuWTREpULGPJ/v9sygoscZQbXepiOnxqhSb2pLqahYLFlhFFYCP/jYnTct/+JEbaXSAJJ05bHHXiwWlgx9NuNkPtBsNsjz/MhxLLVkfomWLihzes8wlzCE42cqdOJslXw/jFzXUblcntp++4v1E2Mfve++m2u97hL0zAAe1dp6ixDh48/uf0OxUPqTTDb3hsroSBREkRwq5sXq5fPPFejwXZ9hLmS8JlBw9MrRszRWa2hbqbg8b1i1W83dtXr1F+69Y83uRGuUFgNI3tDO7x+4N5fJ/7XjOPNq1UqoSVi441+7eJ75cKZ6kkf3GOaSJBqBIbx2ctRkBIJ0WCyVLd/3R5vtxr+957YbHu+VCVy1AWitLdTwP7Hn0AdzudwfhkFgtb125NiOWrVsmIZLuav9EQwzsIxUm3To2Aj5gR9l3IyybDtsNpu/dPe6VV9ItDdrBjBe/MVC8aFWq6n9INDFXEYi5UedPqf7DDM1Eu1gvQG6BLVmO3ZsW2SzOVGr1z7UCxMQvRJ/u92MWm1fDhVzYu3KRajfZ/EzTI9MIIpi2vfqKRqrNXU248SZTE71wgSwKOeKeXS8+Ivmzh+1vUAunl9i8TNMD+mMnZkFcYQbKzQGrUFz0B40CC1Ck1O6/pW+IBl82PXcwQ+Wh8oPtbviX7qwLFYtHZ7Ke2AY5go4dHyEjp+u6Ixrx5lsTlXGKh/atP66L0xlYPCKDGCb1mor5vmffmlTsVR4HOufW21PwJWuv2YBj/IzzAzNErx85AydPFvV2YyrsT9GrVq/974NN+5KNNpzA8CiHixMeOq5w7c5eXdHHEdDrVabSoWsTPr8DMPMDMmYQLXeirPZDEmpxvyGt3nj+hXfT7Q6metMSrXJhgXPPns8L135Vcu2hlvtti7kMyx+hpkFkjEBaBBahCahTWgUWu1qtjcGsGMHmfJDT7U+XyiWbkORj2PbCml/MtrPMMzMkQwMQoPQIjQJbUKj0Co0O5nr/KsukfQpnnz+lZ8rD8/701qlEoaxttasWEjzSjnu9zPMLI8HjFabtP/wabKkCIvlslUZGf35u25f/aXJjAdc1gC6mxLop/ccvs7O2M9pTZlmqy2vWTwkUN7LRT4MM7skGkTZ8JGTYzqXzWDrsXbQDtZvWLfi4ANEApvxTKkLgBdjDbIW9MeOm8lj0A+FPtcsYvEzTJrqBKBJaBMahVahWWgXGr7c6y9pAEgf0Jd4cs+hXy7PG3prrVoNbdtS1y2fz8t5GSaFRgBtQqPQKjQL7ULD0PIVGQBS/y1E8RN7XlliWdbvNBuNOAxjhR18XMfq9j2m9fMwDDNJkpW20CY0Cq1Cs9AuNAwtQ9MXe628bOof038vFIrzPM+Ly6WsWDK/2O1zsPoZJk0kS4ihUWgVmoV2oeHLdQVe982kiODJF4+sdSz1XBQEdhBG4pbrlohiPsMDfwyT8gHBWqNNLxw8gd22tbLtwA+j9XfdfM2+ixUIXXoQMAo+5zqu6wehxgaeLH6G6Y8BQWgVmoV2oWFo+VKvucAAzGCBIP29F1/bnC8Uf7Rer0WWpdQ1i8oz8gEYhukN0Cy0Cw1Dy9A0tD1xQPB1GYAgoeMw+BCO3Y6iWM8fypPr2Jz6M0wfZQHQLLQLDUPL0DS0/brnTzyw85n9x29Sgp4JgsDF99ddv1TgME4u+mGY/iDRKg4r3fPycSN627a9SNOdd65Zunf8QaTnMoAdnUM7deT7HygUixls4o/jujri52k/hum3aUFoFxqGlqFpaBsah9bPPRd/YOWQFEI/vf/YwjgM9yilFnqeTzzyzzBzY0bAdR2Koui0tKx1G9YsOx1rbab6jRPsIFLIE+Io/rFSubzIzCHmXVHIdU7v4Wl/hukvEs1Cw9AyNA1tQ+O6q3k8bgxgM5HpD8Rh8O44ipA9EI7oTlIJhmH6j6TrDi1DxtA2ND5e8zIpDtj1zIEbbcf5kVq9hnpiHNdtLsJVfwzTnyTahZahaaNtx/kRaB2ah/ZlkgUox7kvXyhkwyCKS4WMsK1J7SfAMEzKgZahaWgbGofWuw9JuX379m6Or98dRZ29A+YVs53vcPrPMH1NouFE0x2Na9MNgPZNjvD8q6/O8+v0ilSqHIahvv2GZcJ17Vl94wzD9A7PC+j5A8dQFCTiKKo4BVp9+8qVoyb995pyfTaXL/m+H+dzLoufYeYYuKFD29A4tA7N4/vGAITWP+y6rtCa4mLWFABy+s8wc6wbAG1D49A6NH/OAGKiu8MoNAsBijm3lyeHMwwz63S0bLQtSEDr0Dy+J7/51NEcxdHNnucRThhB+aB5CeufYeYEiZahbWgcWofmoX25xIqus5S9FN90bSUde0pnDDIMk3KgbWgcWofmO9q39HW242S8Rk27+YyQsj9v/aaXgw4OFy4y04g0Z2SJvuwgQ9tYJtxsezqbyWZ01LrO0iLeqFD0o0WcdW01/sCBtGPWL0Dx5pQUYX4x+Ithppsowmqbjqj6IeQSTWddm0a1iJWlFLRvkVR5s6EgUoQ+qv6D8NH4qpuxRLGmE6dbdOhoA+uaSXdyAobpCYIExVrTquV5WrIw27nhTIjFfgAahzLMDV6qvBVH8T1hEJjNAHIZp/u09H4YzGhA3GhwNPw/P3WK/vLbR+jZvaN09GSTxqr++W1RGKZXiE5MDZUcWr44R3fcNI9+6m3X0A9vXNSJRdxh8V9qpdN5Y9A4tA7NQ/sWCXF+c4DUvvkL1zijob/zLyfo0w/uoT0vVcj3I8q4imxbUiHPFYzM9NH2I9p7sELPvjhC//dvDtG6G8v08Q+vox/5oSUXxGhaueC9CSEtoakcx7EZ11BmbVA6SdKsRiukT/7+8/SlP3+ZbEtSPmtRIWeRjjuZgRkTYJhpQklBlmtRLosDcoh+8FKF3v2R79LP/bvr6VO/druJxzR3CaBxaN1oXlPZkkquxbSAbVsCJ4uAtDkYNI0GrdYD+umPPkbffeo0LRw2VU0seGZWuqDUPXMXRgC9PLTtAL14sEJf++x9VCrYnZhNkY4STUPj0Hq37methBOkGZNSEVEF4v/1x2jn7jO0eH7GjMLy3Z6ZbeJYm1hETCI2EaOIVcRs2oehoP305vzjGhhTGL/5e7vNgN/CeS4FYbpNixk8gjA2sYkYRawiZvvhBpVqA4CzYrrlL/7hNfryN1+hJQuy5Acsfiad+EFsYhSxiphF7Jp6gRSTWgPQ3X7/SMWn//bgD6hcdCiMWPxMugmj2MQqYhaxixhOc1cgtQaAwh4MXDzy3WN04HCNMo5MdUMyDECMIlYRs4hdxDBiOa2k1gAwgoriiq9961VyHcXiZ/oGbY7mUiZ2EcNpmg2YSCqX/iXTfsdOt+jFAxVT5IOGnCxpm8Zk5gZ6kiGIWEXMInZPnGnTsoXZ1E0LptoAzA4mQtBLr1RNP6qIedVJplEm5cIUYXqzLqYPkaKz4GwyJoDnWKozfoUYhgEkMZ02UmoAnb+/v3+MgijudAcm8Tq0L0Zii3mb3O6YQfqanOkndDeuPD+mWiMgx57cWBRiFrGLGH7zXYtT24VNpQEkBCFqACb3XKwAbPkRrVlZpK9+5l4qFiyzZoAdgLkqdKfyr1YP6f6PPU77X61R1plclxRPQQynmVQbwJVkTObu78e0cnmBrl2am863xQwgQ0XHxBYWn+Vc7J8xudelMOvvHwO4UtDYQRAbd8bioLQuyGD6ixhT0rITW2kX9EAbADD7HAhBsejUETBMr2JKzMF4Sm0dAMMw0w8bAMMMMGwADDPAsAEwzADDBjDgpHuWmplu5twsAHN5sXe2tOqAQW2eKR1s2ADmOObwlK7iu2enXIAfdx7P9M+REEwPYQOY48KH6JMzLNoR0csNTc+PxXSgoemVekzzHEGfuMUmF51BrpweONgA5rjwsYPazrMx/dPpmL43GtPxlqZW1HnMjzX9yUaHhuzuEuzZfvPMjMMGMIdI1pxD3CO+poePxPTIyYheqqM8WlBGEjmSKG8RjfpE719p0b0LJGHbOj5TcTBhA5hDg3sQfyMk+srhkL5xJKajLW369kWrc4BlMhaAfj9M4GdWds+Jm+0PwMwabABz5K6Pwb2/PxnTgy+HtLcWG9HPczqPj98cBXd63P3fu0LRihzOtOOZgEGGDaCPScSLPv1n9of09dciM5i3wBEmrb/YjtT4XtE+f/dnBhs2gD4l6be/VNf0yR8E9NxYTMNO55j3S+1BAbOoh0R3DUtametsb8V1AIMNG0Afi39vTdN/fNqn0YBoviMuKfwE9PWDWNPmhbIzJjBTb5hJLTzz0+fir4VEJevSd/2Jrx2yBb1pQefXznd/hg2gj4gvIv6smpz4k7GCtUVB13bTfx79Z9gA+kj8GOk/1tL04WfOi3+yR88l6f/1BU7/mfOwAfQBepwJYMDvrEeUuwLxJ8BAbi7yfZ85DxtAH033/a8DIe08q6lsTy7tHw+eroQwc/+AbYABbAB90u/HNN+fHopMcc+Vij+pAiwoooVuV/rsAAwbQH+ABT3/46Xwqtw6KQBalOEMgDkPZwApJuqm/t8+FdMTIzEVrAvLeq8UvDblB9UwMwwbQMp/OVi482eHQsqqTnnv1cKZPzMeNoCUArFj1H7H6Zj2VGIz6t+LmzcbADMeNoCUAqFC8N88FpElOjX+V8vl1gkwgwkbQApBjT76/q81NT01ElPuKvv+eKktic76RIebnRUAaT2umplZ2ABSSCLOfz4dUy3UPdutJ4w7ewEwTAIbQApJ9L5rJDbFO73q+4da0wvVztU4AWAAG0DK0N30vxIQHajFZkuvXqTrSSUg9gcEPBjIADaAlJGI/VAjplNep+/ekwFATWa3oAN1Tc2oM8PAWQDDBpAyElG+WNNm227Rw+u6Csai6dmxuDPLwA4w8LABpBTs7ttrfUL0kdb0nVPdmYAeX5/pP9gAUkZyx0eq3qsBwARMJeaUoH85G5lTgjDWwCYw2LABpJSxoHfp/8RuwKtNTY+e7nQDrqa+gOl/2ABSijVNw/To99tC0P8+FJpVhjwbMNiwAQwY6P2jshDrC/7hVGy6Ab1YZMT0J2wAKWU6a/Y7x4EL+sLBsDMlyAOCAwsbQErB9t3T5QG4LjYUxe7COEoMWQCPBQwmbAApIxH9DQWs/+/9QGAC0n5sL/blVyNzbDjWG3BXYPBgA0gpOL132gfoMCAoiT6+J6CxoLP3IGcCgwUbQMpIRI/tux05fd2AZEAQ5cEn20S/9mznrAHuDgwWbAApAzX6YFVe0iK3syHodGYCSPux1+DTo5p+pXvgCJvA4MAGkDKS4hzs/X9DUZqKvcQUaDrHA2yip8cuNAEeE5j7sAGkkCTt3zQsp3UgcOK04zkT2O3TWb+zEQlMgMsE5i5sACkkueP/8EJJRas3uwFP1gSGbBxCoun+JwL6F7MhSbKIaGbeAzOzsAGk9JeCbgBO8d04LKnZTclngmRM4Iyn6cNPB/R7+0KzMjHZlowzgrkFG0BKwQ0XmvuJZcps5TWTNfsQORYNoVjoS4dCev+TvtmdGBnC+IwAJsWJQX/DBpBSIDQs3Nm8UNK6sjxXsjtTJOIedgQdamr6L3sCuv8Jn/76WESNqPP+kJUkg5aJISSvm/iVPMakCzaAFIN5ekcS/ewqi1pR73YHvhIgbOxLiNLkl+owgpDes8un338ppOcr+ty+AokhJKYw8St5jEkX1my/AebSJJV5b1sk6e5haQbnrvaMgKmQ/Dx0CXBC0Ym2pocORqaMeGlW0C0lQTcVpfkbhrU6L19nVkdbmqqBpg3zXv8YM3uwAfQBKNf99Rstev/3gll9H4kRQOTICvDv4y1t9hn8fzjBSAqTUs53z6eWeIkliQ7Vie5bIGnDBmlex9lAOmADSDlJQc76IUk/v0rRHx+MaL4zu0d86XHTgokZINFP3lJ1nE/hZh9ooqVZok+ts86NbTDpgMcA+oCkNPdXbrDonvnCnBkwXTsGTdUMxg8C4r0lX8heoljTJ2+xaWlGmMenu7KRmTxsAH2AGGcEn7rVNik2ZgXS2pdORv7x/k57mn5htWVmM2ASnPqnCzaAPsHs4KuJlmUFPXinQ0WLqJViE8Dd/4yv6T+ssugjN1pG/Gl9r4MMG0AfjgfcVBT0RxvOm0BaugNAjBP/+1da9J9vsnjQL8WwAfQZ6iImUA3TYQKmBkAQnfQuFD++l4K3x1wENoA+N4EvbHTM/Huyem+2+tgwIC8iaoVE/2kti79fYAPo8yKhGwuC/nSjQ+9dYZltvVCZBzHOlA8kpnPWJ1rgCnpwg00fXH0+7ec7f7phA5gD04Oo0PvEzRZ9dr1NK3LC9L/HL9yZTuFXu6bz09cq+urdtqlY5NH+/oELgfqc5Hw/zBD86GJJ98536CuHQ/rGkdiU36JIB1/Jop2p1uCYmv6uocBckloEVPf93CpFbxzu3EvwM3i0v39gA5gDJOKE+LCb8C9eZ9GWazQ9fCSmR05G9FI9plgLyshO5V4yTpCYwcUq85JineTQkDDu9PFxZDlWCL5tsaT3XKvMHR8kd32e5+8v2ADmYDYAI4BIP3SdMnfnnWdj+qfTsdn/H7X7mDqEwFX3a+IMAq7hRx1jwF4ElhA05BCtKwt680KL3rxA0sp850VJ9sF3/f6EDWCOAVmqcUaAUtw3L5TmC331lxuanh+LzdLe421NlUDTyfb5pcZm8Y7o7EqMLcPXFqWZbbi5JGhJRrxuYVAy9cf0J2wAA2IEAGMBt5YE3Voyq3cMeKwWapLjVIykHl2JiSTXwlM51Z8bsAEMiBGMT9eTLn+yUUfZfv0tPDGN5LnJlB6n+nMLNoABHCycyMVmBvgOPxiwATBcrDPAcCEQwwwwbAAMM8CwATDMAMMGwDADDBsAwwwwbAAMM8CwATDMAMMGwDADDBsAwwwwbAAMM8CwATDMAMMGwDADDBsAwwwwbAAMM8CwATDMAMMGwDADzJzbEAQ73kSRNmfSy6lugs8w44hjTaq7F+JcI9UGMJUGh/iVEuaLYXqCEudi60pJu2mk2gACHEEzSXDHz2ctemrPWfrk556neSWnL34BTLrR3RAcrfomthBjiLXpiOHZINUGcO2SHCkpJn2cFcSOBv/c/9lH8cWOu2GYKSKFoFLBnvQNBdGH2EUMp5lUGkCyI+2tN5Ypl1EUx5N/LX5Bw0MOb3TJ9BR9hV0AxCxiFzGc5l2WU2kAomuz111bpGWLcnTkZJNcR170DLuLMZW+GsP0CoSv50d0zeKcieHO99LpADLNI/lw0LduWkJtLzLpFMP0A0oKE7OIXcQwYjml+k+nARi6DfbeH19JlhLnTqphmLQTazIxi9g1pFT8qTYAuChGW29bO0Rb3rmSRioe2ROPsWWYlGFbwsQqYhaxixhOc/aaWgMASJsECfrND91CSxdkqeXFJFPcmMxgI6UwMYpYRcwidtOa+veFAWDqBdN5K5bm6X/+1w3UbIWktWYTYFIpfq21iVHEKmIWsTv+1OU0kmoDONcViDS9403L6MEH7qJqPaQgjE0fi2HSgKWEiUnEJmIUsWoqUvsgW029AQCU9aJBf/rHVtIf/fYbybakqcyyLNEXjczMTZQUJgYRi4hJxCZiNClH7wdSWQdwMdCgYaRp6ztX0q03DJly33/cdcL8AlCeicfR5INeAIi0c7raANls2lPa6UaI80VB1UZAYajNdN+nPnK7KfpBjPZTdto3BgDQsBhVRUN/4/Nvoof/7jBtf+Qw7dp9mkYrgQl+S/VFUjNtZF1lTLHXJoDAR7C3vJAGmTCKjQkW85YR/pa3r6B3v2OFeQyx2U/i7zsDSNIuLM9EZRUaHl/7D1XpmR+M0gsvV2jfK9WBvEthAApt8oMDYzQy5vfUBBLxo8Qa2VfyswaNWGtau7pEt1xfpjtvnUdrVpXM99HOaJN+7I72nQGAZCoQaRj+H7+I5Jcx6PzMx3bSt757jIZsm6IeOQAMtemFtHnNPPrKZ+7pyTXnAlp39wpA97NPDbEvDSAhGWjBLyGJ9T79PVw1aAOYYYjsaBquj2vi2vg5yc8aRPS4OEMb9Mtg35w0gIRBDcaLtcN0toQY19bc5nODwR4xY5gBhw2AYQYYNgCGGWDYABhmgGEDYJgBhg2AYQYYNgCGGWDYABhmgGEDYJgBhg2AYQYYNgCGGWDYABhmgGEDYJgBhg2AYQYYNgCGGWDYABhmgGEDYJgBhg2AYQYYNgCGGWDYABhmgJkTm4KmjWSX4pncoRg/E0znwUi4drIr8EyStCVvRNp72AB6zGxtmZ38TAun1E7D9XX32vg5syXEQd6OfLpgA5iGAN35zGn6+t++SsdPt8xRZTNxXuH4k4FyrjKn2PQKXAvXfH7/KL33o4/P2MlA5kSiKKalC7P0nneupHvuXMgm0GPYAHos/q/9zav0y5/6njm1COfE6TlwNiCuhWviyLG/f/w4zSTmQJJI01e+eYj+4JOd03c5E+gdbAA9AIdC4ly4b/3TMfrwA09SuWibE2PiuBPAc+F04MQEyrbd+4tf7uea7k3nGDi0balg07vevOxcmzNXBxtAD+9Sf/DV/Ub4CEwcpjnXgAn06rzBKwFGimwKbYs2/tH7lhJrvzfwNOBVAj0g9a83Qzp8rE4ZV5m7E9Nb0KZoW7Qx2hptPgteNOdgA+gRyTQVB+X0m+2gHgA7HbAB9BAW//TDbdxb2AAYZoBhA2CYAUZKzLEwDDNwQPsyjuJ9rutSEITa80PzAPezpgYPTk0/3MZTI9E0NA6tQ/PQvtSCKnAC1I9EmHBlptzAqFDjAJ0+0LbJQitmakDj0LrRPLRPWp9TPTfs1IOykLNoxbICtb2IK9SmARRXoW3RxmhrNtupcYHGtY4tqeROy7Z/KNZaN9s+lQqZbgEmT7ZOulFRUqkE/fL9a2jn7tOmaAVls5cqBUZbd17GbXy+BUnIi6wwGl8KjC+0Mdqai62ulI6moXHEn2XbJH1vp0Vx1DCru4jID6MrvizTuTvhjoQa9QcfuOuyi4G01jrj2EIILmY9DwqoYmr7vhYTTCAps0YZMNoWbYy25nUAUwMaR5uae1AcNSyh5VMRhC+0bHmBedJMLPWca6BCDYGJ1WorluYuuhwYvVfHssRrI/7RTCl/hEir2X7f6UBE7WrjmmuHneV+GOqk1o+XA/eORNNG40JLaB7at6JQHAx8v62UlfH8gJda9sAEsG4dXxfLwUYD2vuNF+iRjEtm7GXQh12TSei2R/Lf30Jvn2fTTZfqg/Iy4KsD7QeNK2UJaB7at06E6uASyz/uZrKrPc+L/SCUGXdml3zORRMYvyWYyQAEiSjSwZ/vpl0jrVhlLMpE4aDLv4OyJLVDCv58t9z1vjfQ9UoJmya0H28JdvX4QUheEMWu60qv3Tp+InQOWj+xcXnzyRcOv+i67upms6nbXkAwgJne024uMXHbqqQtYy3iSMdRxpHSlqSV4iIs015oLkkS43xCyhjNwvHXO5K2hLajKDI1AJ7vvwjtm/0AJNETlrLehU5qrenRUCnHMwE9xIifSFuK3LtXyJsf/kG4q+RIB9/r5c/pVySRqPqx/+5brfVoI7QLFv3N9vuaO3RSUGgbGreUZTSPR4wBaCH+2fM8LQTJWsszL+GBwN4HOZx4/VK6N2NZ7isj8WuWJVU84MVXKEgJwzhaPWxdu3YhbTRLfln8PSXRMrQNjUPr0Pw5A3Bz8XOteqPqOE650fS05wXC5XGAnpN0qRDoaxfKjZ1/cTdgfBtwt3N68LyAoG3HcWSr2ai4BXoO35fbtm1Tt69cORprejyby1EUxXGSBXTqVZheg2pMpLn8Na4NYu4OTQeJhqFpaBsah9aheWjf2rJlS/e+JB5WSr0L/zdaa9GCoQJ3A6YJKbl/+/pGma7WHmxEN6WCpoFSKD0RD+P/oX00u+mERr7/WKNeb1m2ktV6WwdcFcgwcwJoGZqGtqFxaL37UIzya5QGy0133vBS4PvfKRaKWC4Yj1Qa5hncDWCY/iTRLrQMTRtt+/53oHVoHto3ideObgImLfthqZTJGs5UGt35Q56NYZh+BNqFhqFlU0illIDGL9A8/thMFJlaDCX/plqpnEKlUL3h6XqzbS7EY4EM018kmoWGoWVoGtqGxkVX8+cMQAihv6O1deeaZafjKP5KsVQSWuvo9FinG8D1KgzTb3QcABqGlqFpaBsah9ah+QvGXjd3lqkL5ThfrNdqbctSaqTSMKXBSSrBMEz6Sbru0C40DC1D09A2NA6tJ889ZwAYENhOJDesXfai57X/olQuiyiKo+Nnq7P2QRiGmTrQLjQMLUPT0DY0Dq1fcvZVk8ZAwUNhGJJSUpwda5glhBhE4CyAYfpj4Q80C+1Cw9AyNA1tT3z+BQawVYiINIk33nztjka99veFQlGFYRQdOVWZ0Q/BMMzVAc1Cu9AwtAxNQ9tG45Oqv1L2Rzzf8xzbEmdG67rWaHMWwDB9cPeHVqFZaBcahpYv9ZrXGUC3MEjddfM1+9qt9teKpbIUgqLXTo1xURDD9EHxD7QKzUK70DC0DE2P7/tfNgN4oLN3pRCSfrNer41iDrFSbekTZ2vdLICnBBgmTZiNfQURNAqtmlqeem0UGoaWoemLve6iBvDb3RmBu9etPhGG4Sdy+by0LBkdO10xJ4vwtCDDpG/aD9qERqFVaBbahYahZWj6Yq+9bJ1vN22Ivrfn1X8olIpvHRsdi8rFnLpp1eLOi7lKmGFmnSQh33voJFVqzWho3pCqV2v/+MZ1K/9NouEpLcI81xXQ9Iu+125ksxkaqzX1kVOjPCDIMCka+IMmoU1oFFqFZi+X+k/KAJKuwMbbVr7stbxfzeZyyrFUdOx0lUarTR4PYJgU9PuhRWgS2oRGoVVo9nKp/6S3YcC84aOPauuu21d/aWx05EuloXk49Cp85diIOWSAxwMYZvb6/dAgtAhNQpvQKLQKzU6c878Yk+rFI5WAWTz33IlMnIl2ZbLZ2yqVSlTIZdTNqxaj2qgnH4phmMkTRTG9eOgkVvxF5XJZtVut78u22rR+/RIs442TBT+XY1LK7V5I33HH0kbsxfeHQTiSzWREvdGO9716yrwRhmFmDmgO2oMGoUVoEtqERjsbff/r4geTvnWjiGCb1mrj+hXfr1aqP45DHF3XMQMPh46PmOdwfQDDTC+JxqA5aA8ahBahSWhz2yUKfi7FFeXuZjxAa+u+DTfuajZbv5jJZmU248SnRmrGBHj3IIaZXqAxaA2ag/agQWgRmoQ2J9Pvv+B6U3kT+EFvESJ8Ys+hDxaLxYdazWbk+YFcNFwUq5YOmzEBPtqJYXpDoiWk/Yn4XcfGFt+qVqt96O51q76QaPJKrz3lUh7d2VWkYwKF4kPtdjNqtX05VMyJtSsXsQkwTI/Fjz6/mevHnT+TU7V6R/yJFqdy/auq5ZtoAq1WU/tBoIu5jFy9fD7lMg5nAgxzleJvtn165ehZqjXbsWPbIpvNiV6IH1x1Me94E8jlcn8YBoHV9tqRYztq1bJhGjYHjTIMMxVGqk06dGyE/MCPMm5GWbYdNpvNX+qF+MFVT+DjDaD/gTdUa1Q3CylHy+UhFYZB+NLhU3T4xOi5WmWeJWCYy5NoBH9BO9AQtARNQVvQWNLnv1rxg55U8GDwAW/onttueLzRqL01DILd84YXWEqI6OipUY1FCu3uKsLkwzEMc55EE2YzTz80C3ugHWgIWoKmoC1obKoDfhejp+v5kpVHjz32YrGwZOizGSfzgWazQZ7nR45jqSXzS7R0QZlXETLMJUzg+JkKnThbJd8PI9d1VC6Xp7bf/mL9xNhH77vv5tq/trrvSjHHg/cKvDGcOIo3SkQffGbv0Sdsx/lMNpsr12rV8NXjZ9VYrSWuWTREpULGvIanC5lBRXcH+UC13qYjp8aoUm9qS6loaGjICqOw0mw2P3bnTcu/iOdAW70UP5iWFf1YO7B9O8mtW0X0xLMvr3Fyuc/lcrm3Nxt18nw/JE1qwbyCWLawTFnX7r6m8254iwFmLqO7fyTCx2IebOKBPfxIUOQ6jpXLF6jZbD7iN5sfufuO6/dv26bVli2Tq+2/UqZVb+PTlaf3Hf1V27I+7rqZRbVqhYIwjCyl1PxynpYsKJ0zgs7reLMRZm6hJ8Q0hH/iTJXOVhoURlFkW5Yqlsrkee1TQRh+esPa5Z/vvK63Kf9Epv2Gi1NIH+juLbBz977luVzhd7QQ92fcjFOrVeMwirVtKTlczguYQSmfOddQE92SYfoJPSGrxb+rjbYRPU7sCcIotpQUxWJJtr22L7T+arNZ/8Q9b1h79Le6urmSuv6pMGPSGu9kT75weJ2t1O/ajvNO27KpWq3ABUNBQuVzrlhQztNwOUeObV1ipHSm3jXDTJ5LxacfhDRSaZpTehtNT2vSyH6tUqlMQRjgyO6/DaLoN+66ZcWembjrj2dGpZTsK5B8uOf3n3ibJv2+KI7eUyyVnHqtRp7nRWhIx7ZkMZ8RQ8UsFXLuBV2EC69p/jz/UXgcgZmu+KXx5+R2Yu5SNyOk+PWmR2O1Fvbp134Qxniu67qqUCxSrVr1lVRfFyS+fPuaJd/uxLJWk13H3ytm5V6KbsH4NcvPHji+TpD42SgM31coFhdHYUT1Rp3CIDRGoZSU+awrYATFnEsZ1ybXtkhKTgWY2SeONXlBaA7jrDU9I/xGy9NRFJv03bItVcgXSFmK6rXaSWVZX9ak/+yOG5Ymd3wEMlb1zvjGGrOqIExrbNmyxUwf4t+7nn95cT5XeFccxz8ZR9E7CsWiG8URtZot8n0/1qRj3OCVUsK2lMg4lsB6A8uSlM+45tMoKSnj9HR2k2EMKNAxmtZEjbZHYRibOv22H6I/r6PIJK9akJCO48hsLktKGtF7Uqm/k1L+VaNZ/9am268/mdzxt2/fTlu3bp2RdP9ipOIWioxgx44d8i1vecu56qan9h69yXGtTZEf/ZTW8X2u6w47boaiMEQ3AYZAYRhi6iTuDBR2kjEhSNi2lYrPxcwtgiBEpW6nJ2B25DQ9AWlZlnAcB+k9KcvCrryI0REh5GPKUX/pe+GujTct35tc59FHH7U2b96MVH/Wt9JKlVCQCu3YsUNNbJw9ew4Pt5VYT1q/SZPeRFqslVIscxzHtSzLqD4M4B2a4jg2BtH5aFxzzPQCYWIJApcSvVeBtN4MQOHkXd/3vTjWx0jofYLELhLiu5lIP7du3YqRiTe5zZs3RzPZx+8rAxhPp8FInj69XU9MkZ46ejRnteR1tnJWtBr1TaRELo7ie4SQFmldlEquhREwTK+QUlIcxftIiJrWcSiV3EmRbmbzhV1B5B8Os/HBjcuXN8e/Bl3chQu3iM2bzcBeKgPy/wPvbM+zKR0BRQAAAABJRU5ErkJggg=="><div>
+  <h1>一键关闭屏幕 · 使用说明</h1>
+  <p class="sub">只关显示器，不睡眠、不锁屏、不影响任何程序运行 · 适用于本机（联想 82JW / Windows）</p>
+  </div>
+  </div>
+
+  <div class="card">
+    <p style="margin:0"><strong>一句话总览：</strong>Windows 系统本身<strong>没有</strong>「关闭显示器」的快捷键；联想笔记本的 Fn 组合键机型各异。所以这里给你做了一个<strong>双击即关屏</strong>的小程序，另附一个全局热键 <code>Ctrl+Alt+Q</code>。</p>
+  </div>
+
+  <h2 id="s0">目录</h2>
+  <nav class="toc">
+    <a href="#s1">1. 先回答：本机关屏快捷键有没有？</a>
+    <a href="#s2">2. 项目文件都在哪</a>
+    <a href="#s3">3. 三种用法（推荐第 1 种）</a>
+    <a href="#s4">4. 怎么把屏幕重新点亮</a>
+    <a href="#s5">5. 原理：为什么它不影响运行</a>
+    <a href="#s6">6. 常见问题排查</a>
+    <a href="#s7">7. 附带的其他小工具（可选）</a>
+  </nav>
+
+  <h2 id="s1">1. 先回答：本机关屏快捷键有没有？</h2>
+  <table>
+    <tr><th>方式</th><th>结论</th></tr>
+    <tr><td>Windows 系统自带快捷键</td><td><strong>没有</strong>「关闭显示器」的全局快捷键。<code>Win+L</code> 只是锁屏，屏幕依然亮着。</td></tr>
+    <tr><td>笔记本 Fn 组合键</td><td>联想机型不统一：ThinkPad 多为 <code>Fn+F3</code>；IdeaPad / 小新 / Legion 等常见在 <code>Fn+F2</code> 一带。你这台没有装联想的显示器切换热键工具，因此大概率无效——可以顺手试一下 <code>Fn+F2</code>、<code>Fn+F3</code>。</td></tr>
+    <tr><td>电源选项自动关屏</td><td>你现在是：<strong>接通电源时「从不」关闭显示器</strong>，用电池时 10 分钟关闭。所以插电时屏幕永远不会自己黑，这个小程序正好补上这个空档。</td></tr>
+    <tr><td>本程序</td><td>双击图标即关屏，另支持全局热键 <code>Ctrl+Alt+Q</code>。</td></tr>
+  </table>
+
+  <h2 id="s2">2. 项目文件都在哪</h2>
+  <p>文件夹：<code>D:\WorkBuddy工作空间\PC自动开机\screen_off\</code></p>
+  <table>
+    <tr><th>文件</th><th>作用</th></tr>
+    <tr><td><strong>关闭屏幕.exe</strong></td><td>主程序。<strong>双击就关屏</strong>（无黑窗口闪现），推荐日常使用。</td></tr>
+    <tr><td>关闭屏幕-静默.vbs</td><td>和上面等价的双击入口（供从桌面快捷方式或计划任务调用）。</td></tr>
+    <tr><td>关闭屏幕.bat</td><td>双击也能关屏，会闪一下命令行窗口，作为备用。</td></tr>
+    <tr><td><strong>关屏热键.exe</strong></td><td>常驻程序：启动后按 <code>Ctrl+Alt+Q</code> 随时关屏。不需要时关掉它的窗口即可。</td></tr>
+    <tr><td>热键模式.bat</td><td>用 Python 启动热键模式的备用方式（不依赖 exe）。</td></tr>
+    <tr><td>关闭屏幕.ico</td><td>程序图标（含 256/128/64/48/32/16 六种尺寸），exe 自带的就是它。</td></tr>
+    <tr><td>图标-light.ico / 图标-dark.ico</td><td>两套配色的独立图标文件。桌面快捷方式当前用的是 <strong>图标-light.ico</strong>（纯白底那版）；想换回深蓝渐变版，在快捷方式属性里把图标指向 图标-dark.ico 即可。</td></tr>
+    <tr><td>图标预览.png / 图标尺寸对照.png</td><td>图标大图与各尺寸并排对照图。</td></tr>
+    <tr><td>制作图标.py</td><td>图标生成脚本（Pillow 绘制，可改配色后重新生成）。</td></tr>
+    <tr><td>screen_off.py</td><td>源码，全部中文注释，可自行修改。</td></tr>
+  </table>
+
+  <h2 id="s3">3. 三种用法（推荐第 1 种）</h2>
+
+  <h3>用法一：双击图标关屏（最简单）</h3>
+  <ul>
+    <li>双击 <strong>关闭屏幕.exe</strong> → 约 1 秒后屏幕熄灭，机器继续运行。</li>
+    <li>桌面已生成快捷方式 <strong>关闭屏幕</strong>，并绑定全局热键 <code>Ctrl+Alt+Q</code>：任何时候按下这三个键就关屏，不用去找图标。</li>
+  </ul>
+  <div class="note">为什么延迟 1 秒？因为关屏瞬间如果你的鼠标还在动，屏幕会立刻被「唤醒」。留 1 秒让手指离开鼠标、键盘，关屏才稳。</div>
+
+  <h3>用法二：常驻热键模式</h3>
+  <ul>
+    <li>双击 <strong>关屏热键.exe</strong>（或 <strong>热键模式.bat</strong>）→ 出现一个小窗口，保持开着；</li>
+    <li>之后按 <code>Ctrl+Alt+Q</code> 即关屏；</li>
+    <li>不想要了就关掉那个窗口（或按 Ctrl+C）。</li>
+  </ul>
+
+  <h3>用法三：命令行（适合自动化 / 计划任务）</h3>
+  <pre><code>python screen_off.py                 # 1 秒后关屏
+python screen_off.py --delay 5       # 5 秒后关屏
+python screen_off.py --lock          # 先锁屏、再关屏（点亮后需输密码）
+python screen_off.py --hotkey        # 热键模式（Ctrl+Alt+Q）
+python screen_off.py --hotkey --key L  # 换成 Ctrl+Alt+L
+python screen_off.py --self-test     # 只体检，不关屏</code></pre>
+
+  <h2 id="s4">4. 怎么把屏幕重新点亮</h2>
+  <div class="ok">
+    <p style="margin:0"><strong>按电源键，或者动一下鼠标、敲一下键盘，屏幕立刻亮起，程序不中断。</strong></p>
+  </div>
+  <div class="warn">
+    <p style="margin:0 0 8px"><strong>一个要提前知道的事：</strong>屏幕黑掉后，鼠标和键盘的任意动作<strong>也会</strong>唤醒它——这是 Windows 的固定行为，系统不提供「只能由电源键唤醒」的开关。</p>
+    <p style="margin:0">如果你担心误碰鼠标把屏幕点亮，用 <code>--lock</code> 参数（先锁屏再关屏）：亮屏后看到的是登录界面，需要密码才能进桌面。</p>
+  </div>
+  <p>另外建议顺手检查一下电源键的行为，避免按电源键时把机器送去睡眠：</p>
+  <ul>
+    <li>控制面板 → 电源选项 → <strong>选择电源按钮的功能</strong> → 「按电源按钮时」建议改成 <strong>不采取任何操作</strong>（或「关闭显示器」）；</li>
+    <li>这样按电源键只是唤醒屏幕，不会改变机器的运行状态。</li>
+  </ul>
+
+  <h2 id="s5">5. 原理：为什么它不影响运行</h2>
+  <p>程序调用的是 Windows 自带的系统命令 <code>SC_MONITORPOWER</code>（显示器省电指令），也就是电源选项里「X 分钟后关闭显示器」用的同一套机制：</p>
+  <ul>
+    <li>只让 <strong>显示器</strong>进入省电黑屏；</li>
+    <li>CPU、内存、硬盘、网络、下载、后台程序 <strong>全部照常运行</strong>；</li>
+    <li>与「睡眠 / 休眠」完全不同——后者会暂停程序并断网。</li>
+  </ul>
+  <p>程序的做法分两步兜底：先逐个通知所有可见窗口，再额外广播一次，因此对全屏播放器、旧软件也能生效。</p>
+
+  <h2 id="s6">6. 常见问题排查</h2>
+  <table>
+    <tr><th>现象</th><th>原因与解决</th></tr>
+    <tr><td>双击后屏幕黑了一下又亮</td><td>关屏瞬间鼠标/键盘被碰到了。把延迟调大：右键桌面快捷方式 → 属性 → 在「目标」末尾加 <code> --delay 3</code>。</td></tr>
+    <tr><td>双击后完全没反应</td><td>先用 <code>python screen_off.py --self-test</code> 体检；若提示无法访问窗口站，说明是在后台服务/计划任务的非交互会话里运行，改成以当前用户身份、勾选「只在用户登录时运行」。</td></tr>
+    <tr><td>热键 Ctrl+Alt+Q 无效</td><td>被其他软件占用了。换字母：<code>python screen_off.py --hotkey --key L</code>；桌面快捷方式的快捷键也可在「属性 → 快捷键」里改。</td></tr>
+    <tr><td>杀毒软件报陌生程序</td><td>PyInstaller 打包的 exe 常被误报。可改用 <code>关闭屏幕-静默.vbs</code>（直接跑 Python 源码）或把文件加入白名单。</td></tr>
+    <tr><td>想关掉键盘/鼠标的唤醒能力</td><td>设备管理器 → 对应设备 → 电源管理 → 取消「允许此设备唤醒计算机」。⚠ 注意：取消后键盘鼠标可能连唤醒都做不了，笔记本上请保留电源键唤醒，改前先确认能按电源键亮屏。</td></tr>
+  </table>
+
+  <h2 id="s7">7. 附带的其他小工具（可选）</h2>
+  <ul>
+    <li>把显示器超时改短让屏幕自己黑：<code>powercfg /change monitor-timeout-ac 5</code>（插电 5 分钟无操作自动关屏）。</li>
+    <li>恢复你现在的设置：<code>powercfg /change monitor-timeout-ac 0</code>（0 = 从不关闭）。</li>
+    <li>按需点亮屏幕（程序化开屏）：<code>python screen_off.py --on</code>。</li>
+  </ul>
+
+  <hr>
+  <p style="font-size:14px;color:var(--faint)">文件位置：D:\WorkBuddy工作空间\PC自动开机\screen_off\ · 源码 screen_off.py 全部中文注释，可随时修改</p>
+
+</div>
+
+<script>
+  function toggleTheme() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('wb-theme', next); } catch (e) {}
+    syncBtn();
+  }
+  function syncBtn() {
+    var cur = document.documentElement.getAttribute('data-theme');
+    document.getElementById('themeBtn').textContent = cur === 'dark' ? '切到浅色' : '切到深色';
+  }
+  syncBtn();
+</script>
+</body>
+</html>
