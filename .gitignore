@@ -1,0 +1,50 @@
+# ============================================================
+#  关闭屏幕 / ScreenOff —— 仓库忽略规则
+#  原则：源码、脚本、图标、文档、素材图进仓库；
+#        可执行产物（exe/zip）改由 GitHub Release 附件分发。
+# ============================================================
+
+# ---- 本地私密数据：绝不推送 ----
+.workbuddy/
+.workbuddy/**
+*.local.json
+config.local.json
+
+# ---- 二进制可执行产物（改用 Release 附件）----
+*.exe
+*.msi
+*.zip
+*.7z
+*.rar
+*.dll
+*.pyd
+
+# ---- 打包中间产物 ----
+screen_off/发布包/
+_build/
+_out/
+build/
+dist/
+*.spec
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# ---- 编辑器 / 系统 ----
+.vscode/
+.idea/
+*.swp
+*~
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ---- 保留：图标与文档素材 ----
+!screen_off/*.ico
+!docs/*.png
